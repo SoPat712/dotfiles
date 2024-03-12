@@ -1,0 +1,7 @@
+neobundle.vim
+neosnippet-snippets
+neosnippet.vim
+vim-colorschemes
+vim-fugitive
+vim-nerdtree-syntax-highlight
+vimshell

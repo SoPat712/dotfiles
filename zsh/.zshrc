@@ -2,6 +2,16 @@ export GPG_TTY=$TTY
 gpgconf --launch gpg-agent
 export BAT_THEME="Enki-Tokyo-Night"
 
+# history stuff
+export HISTSIZE=5000
+export SAVEHIST=10000
+export HISTFILE=~/.cache/zsh/.zsh_history
+setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
+setopt SHARE_HISTORY             # Share history between all sessions.
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
+setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
+
 source ~/Projects/zsh-autocomplete/zsh-autocomplete.plugin.zsh
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
