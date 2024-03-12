@@ -1,0 +1,12 @@
+[user]
+	email = joshpatra12@gmail.com
+	name = Josh Patra
+	signingkey = 01823AE1
+[diff]
+	tool = nvimdiff
+[core]
+	editor = nvim
+[commit]
+	gpgSign = true
+[tag]
+	gpgSign = true
