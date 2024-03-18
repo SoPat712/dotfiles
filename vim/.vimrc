@@ -9,7 +9,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'itchyny/lightline.vim'
 Plug 'ap/vim-css-color'
-Plug 'terryma/vim-smooth-scroll'
+Plug 'psliwka/vim-smoothie'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'mbbill/undotree'
@@ -61,10 +61,10 @@ nnoremap <leader>t :TagbarToggle<CR>
 nnoremap Q <nop>
 
 " Smooth scroll
-noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 40, 2)<CR>
-noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 40, 2)<CR>
-noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 40, 4)<CR>
-noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 40, 4)<CR>
+" noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 40, 2)<CR>
+" noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 40, 2)<CR>
+" noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 40, 4)<CR>
+" noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 40, 4)<CR>
 " Use tab for trigger completion with characters ahead and navigate
 " NOTE: There's always complete item selected by default, you may want to enable
 " no select by `"suggest.noselect": true` in your configuration file
@@ -171,10 +171,10 @@ set termguicolors
 set scrolloff=8
 set updatetime=50
 set clipboard=unnamed
-colorscheme gruvbox
+colorscheme onedark
 
 let g:lightline = {
-			\ 'colorscheme': 'gruvbox',
+			\ 'colorscheme': 'onedark',
 			\ 'active': {
 			\   'left': [ [ 'mode', 'paste' ],
 			\             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
