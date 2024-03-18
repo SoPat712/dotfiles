@@ -1,12 +1,12 @@
 [user]
 	email = 30350506+SoPat712@users.noreply.github.com
 	name = Josh Patra
-	signingkey = 01823AE1
+	signingkey = 34E3C1465C60BF2DDDD994A819FDD4F401823AE1
 [diff]
 	tool = nvimdiff
 [core]
 	editor = nvim
 [commit]
-	gpgSign = true
+	gpgsign = true
 [tag]
 	gpgSign = true
