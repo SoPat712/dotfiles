@@ -36,3 +36,11 @@ My new .tmux.conf
 ## ZSH
 
 Just a basic old ZSH
+
+## QBIT
+
+The WebUI that I use, and the theme that I prefer
+
+## VIM
+
+Hopefully, a portable Vim setup for working over SSH and stuff
