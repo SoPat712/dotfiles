@@ -112,7 +112,33 @@ return {
 
 			lspconfig.clangd.setup({
 				capabilities = capabilities,
+				init_options = {
+					clangdFileStatus = true,
+					usePlaceholders = true,
+					completeUnimported = true,
+					semanticHighlighting = true,
+				},
+				on_attach = function(client, bufnr)
+					require("clangd_extensions.inlay_hints").setup_autocmd()
+					require("clangd_extensions.inlay_hints").set_inlay_hints()
+				end,
+				cmd = {
+					"clangd",
+					"--background-index",
+					"--pch-storage=memory",
+					"--clang-tidy",
+					"--suggest-missing-includes",
+					"--all-scopes-completion",
+					"--pretty",
+					"--header-insertion=iwyu",
+					"--fmt-style=file",
+					"--fallback-style={ BasedOnStyle: Google, ColumnLimit: 140 }",
+					"-j=12",
+					"--inlay-hints",
+					"--header-insertion-decorators",
+				},
 			})
+
 			require("ufo").setup()
 
 			-- Global mappings.
@@ -122,8 +148,6 @@ return {
 			-- after the language server attaches to the current buffer
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-				require("clangd_extensions.inlay_hints").setup_autocmd(),
-				require("clangd_extensions.inlay_hints").set_inlay_hints(),
 				callback = function(ev)
 					-- Enable completion triggered by <c-x><c-o>
 					-- vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
