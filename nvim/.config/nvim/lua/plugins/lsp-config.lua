@@ -131,11 +131,22 @@ return {
 					"--all-scopes-completion",
 					"--pretty",
 					"--header-insertion=iwyu",
-					"--fmt-style=file",
-					"--fallback-style={ BasedOnStyle: Google, ColumnLimit: 140 }",
+					"--fallback-style={ BasedOnStyle: Google, ColumnLimit: 200 }",
 					"-j=12",
 					"--inlay-hints",
 					"--header-insertion-decorators",
+				},
+				settings = {
+					["clangd"] = {
+						["inlayHints"] = {
+							["parameterNames"] = {
+								["enabled"] = true,
+							},
+							["deducedTypes"] = {
+								["enabled"] = true,
+							},
+						},
+					},
 				},
 			})
 
