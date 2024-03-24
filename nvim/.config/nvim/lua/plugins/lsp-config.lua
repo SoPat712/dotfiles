@@ -130,21 +130,9 @@ return {
 					"--all-scopes-completion",
 					"--pretty",
 					"--header-insertion=iwyu",
-					"--fallback-style={ BasedOnStyle: Google, ColumnLimit: 200 }",
+					"--fallback-style={ BasedOnStyle: LLVM, ColumnLimit: 200 }",
 					"-j=12",
 					"--header-insertion-decorators",
-				},
-				settings = {
-					["clangd"] = {
-						["inlayHints"] = {
-							["parameterNames"] = {
-								["enabled"] = true,
-							},
-							["deducedTypes"] = {
-								["enabled"] = true,
-							},
-						},
-					},
 				},
 				root_dir = function(fname)
 					return require("lspconfig.util").root_pattern(
