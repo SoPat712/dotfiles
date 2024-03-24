@@ -130,7 +130,7 @@ return {
 					"--all-scopes-completion",
 					"--pretty",
 					"--header-insertion=iwyu",
-					"--fallback-style={ BasedOnStyle: LLVM, ColumnLimit: 200 }",
+					"--fallback-style={ BasedOnStyle: Google, ColumnLimit: 0 }",
 					"-j=12",
 					"--header-insertion-decorators",
 				},
