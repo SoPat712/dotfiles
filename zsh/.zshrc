@@ -141,3 +141,4 @@ bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
 eval "$(atuin init zsh)"
 eval "$(atuin init zsh)"
 export PATH="/opt/homebrew/opt/binutils/bin:$PATH"
+export ET_NO_TELEMETRY=FALSE
