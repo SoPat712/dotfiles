@@ -99,8 +99,27 @@ return {
 			lspconfig.lua_ls.setup({
 				capabilities = capabilities,
 			})
+			local function get_python_path(workspace)
+				-- Use a pattern to find the venv path in the workspace directory
+				local venv_path = lspconfig.util.path.join(workspace, "venv", "bin", "python")
+				return venv_path
+			end
 			lspconfig.pyright.setup({
 				capabilities = capabilities,
+				before_init = function(_, config)
+					config.settings = {
+						python = {
+							analysis = {
+								autoSearchPaths = true,
+								useLibraryCodeForTypes = true,
+							},
+							pythonPath = get_python_path(config.root_dir),
+						},
+					}
+				end,
+				on_attach = function(client, bufnr)
+					-- Optional: additional setup such as key mappings, etc.
+				end,
 			})
 			lspconfig.rust_analyzer.setup({
 				-- Server-specific settings. See `:help lspconfig-setup`
