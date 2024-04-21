@@ -1,4 +1,5 @@
 eval "$(pyenv init --path)"
+
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 export PATH="/opt/homebrew/opt/openjdk@17/bin:$PATH"
 export PATH=$PATH:/Users/joshp/.spicetify

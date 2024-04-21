@@ -140,13 +140,10 @@ bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
 
 eval "$(atuin init zsh)"
 eval "$(atuin init zsh)"
-export PATH="/opt/homebrew/opt/binutils/bin:$PATH"
 export ET_NO_TELEMETRY=FALSE
-export PATH="/opt/homebrew/opt/qt@5/bin:$PATH"
 export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(fzf --zsh)"
 eval "$(pyenv virtualenv-init -)"
-
 export PATH=$PATH:/Users/joshp/.spicetify
 export DISPLAY=:0
