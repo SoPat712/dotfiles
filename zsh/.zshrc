@@ -124,7 +124,7 @@ alias zshconfig="nvim ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias vim=nvim
 alias cd=z
-alias ls=eza
+alias ls="eza --color=always --git --no-filesize --icons=always --no-time --no-user --no-permissions"
 alias ll="eza -alh"
 alias tree="eza --tree"
 alias cat=bat
@@ -137,13 +137,52 @@ eval "$(zoxide init zsh)"
 # zsh-autocomplete keybinds
 bindkey '\t' menu-select "$terminfo[kcbt]" menu-select
 bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
-
+# Atuin
 eval "$(atuin init zsh)"
 eval "$(atuin init zsh)"
+# Eternal Terminal
 export ET_NO_TELEMETRY=FALSE
 export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
-eval "$(fzf --zsh)"
 eval "$(pyenv virtualenv-init -)"
-export PATH=$PATH:/Users/joshp/.spicetify
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+  export PATH=$PATH:/Users/joshp/.spicetify
 export DISPLAY=:0
+fi
+
+eval "$(fzf --zsh)"
+
+export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
+
+_fzf_compgen_path() {
+  fd --hidden --exclude .git . "$1"
+}
+
+# Use fd to generate the list for directory completion
+_fzf_compgen_dir() {
+  fd --type=d --hidden --exclude .git . "$1"
+}
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  source ~/fzf-git.sh/fzf-git.sh
+fi
+
+export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
+export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+
+# Advanced customization of fzf options via _fzf_comprun function
+# - The first argument to the function is the name of the command.
+# - You should make sure to pass the rest of the arguments to fzf.
+_fzf_comprun() {
+  local command=$1
+  shift
+
+  case "$command" in
+    cd)           fzf --preview 'eza --tree --color=always {} | head -200' "$@" ;;
+    export|unset) fzf --preview "eval 'echo \$'{}"         "$@" ;;
+    ssh)          fzf --preview 'dig {}'                   "$@" ;;
+    *)            fzf --preview "bat -n --color=always --line-range :500 {}" "$@" ;;
+  esac
+}
