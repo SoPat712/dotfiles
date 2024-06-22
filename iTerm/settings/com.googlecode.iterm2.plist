@@ -2672,7 +2672,7 @@
 			<key>Columns</key>
 			<integer>100</integer>
 			<key>Command</key>
-			<string>ssh -Y -t rijujosh@98.221.219.232 'tmux new -A -s homelab'</string>
+			<string>ssh -Y -t rijujosh@67.146.34.171 'tmux new -A -s homelab'</string>
 			<key>Cursor Color</key>
 			<dict>
 				<key>Alpha Component</key>

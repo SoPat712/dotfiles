@@ -5,6 +5,7 @@ export HISTSIZE=5000
 export SAVEHIST=10000
 export HISTFILE=~/.cache/zsh/.zsh_history
 export ZSH="$HOME/.oh-my-zsh"
+export ZSH_THEME="powerlevel10k/powerlevel10k"
 export SOLARIZED_THEME="dark"
 export ET_NO_TELEMETRY=FALSE
 export PATH="$HOME/.pyenv/bin:$PATH"
@@ -50,7 +51,7 @@ alias cat=bat
 # OS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
-  alias alluptd="mas list; mas upgrade; brew update; brew upgrade; brew cu --all; sudo port selfupdate; sudo port upgrade outdated"
+  alias alluptd="sudo port selfupdate; sudo port upgrade outdated; mas list; mas upgrade; brew update; brew upgrade; brew cu --all"
   export DISPLAY=:0
   source ~/fzf-git.sh/fzf-git.sh
 fi
