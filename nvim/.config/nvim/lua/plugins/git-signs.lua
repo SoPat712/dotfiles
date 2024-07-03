@@ -4,8 +4,10 @@
 local icons = require("joshp.icons")
 return {
 	"lewis6991/gitsigns.nvim",
+	version = "0.7",
 	event = { "BufReadPost", "BufWritePost", "BufNewFile" },
 	opts = {
+		numhl = true,
 		signs = {
 			add = {
 				hl = "GitSignsAdd",
