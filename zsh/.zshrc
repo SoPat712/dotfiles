@@ -15,6 +15,8 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
+export LC_ALL=en_IN.UTF-8
+export LANG=en_IN.UTF-8
 
 # History settings
 setopt EXTENDED_HISTORY
@@ -53,7 +55,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
   alias alluptd="sudo port selfupdate; sudo port upgrade outdated; mas list; mas upgrade; brew update; brew upgrade; brew cu --all"
   export DISPLAY=:0
-  source ~/fzf-git.sh/fzf-git.sh
+  source ~/Projects/fzf-git.sh/fzf-git.sh
 fi
 
 # Editor settings
