@@ -15,7 +15,3 @@ require("vim-options")
 require("vim-remaps")
 require("vim-undo")
 require("lazy").setup("plugins")
-
--- vim.diagnostic.config({
--- 	virtual_text = false,
--- })

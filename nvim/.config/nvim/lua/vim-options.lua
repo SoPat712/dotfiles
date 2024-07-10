@@ -2,6 +2,16 @@
 vim.o.compatible = false
 vim.cmd("filetype plugin indent on")
 vim.cmd("syntax on")
+vim.cmd("set fileencoding=utf-8")
+vim.cmd("set encoding=utf-8")
+-- python
+
+-- Set Python 2 host program
+vim.g.python_host_prog = "/Users/joshp/.pyenv/versions/neovim2/bin/python"
+
+-- Set Python 3 host program
+vim.g.python3_host_prog = "/Users/joshp/.pyenv/versions/neovim3/bin/python"
+
 --line numbers
 vim.wo.number = true
 vim.wo.relativenumber = true
