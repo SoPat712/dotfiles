@@ -57,7 +57,7 @@ alias cat=bat
 # OS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
-  alias alluptd="sudo port selfupdate; sudo port upgrade outdated; mas list; mas upgrade; brew update; brew upgrade; brew cu --all"
+  alias alluptd="sudo port selfupdate; sudo port upgrade outdated; mas list; mas upgrade; brew update; brew upgrade; brew cu --all --yes"
   export DISPLAY=:0
   source ~/Projects/fzf-git.sh/fzf-git.sh
 fi
