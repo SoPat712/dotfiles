@@ -1,5 +1,6 @@
 return {
 	"folke/which-key.nvim",
+	version = "2.1.0",
 	config = function()
 		require("which-key").setup({
 			plugins = {

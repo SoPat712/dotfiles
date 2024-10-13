@@ -24,3 +24,7 @@
     conflictstyle = diff3
 [diff]
     colorMoved = default
+[http]
+	postBuffer = 524288000
+[pull]
+	rebase = false

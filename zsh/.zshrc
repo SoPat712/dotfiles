@@ -11,7 +11,9 @@ export ET_NO_TELEMETRY=FALSE
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
 export PATH="/opt/homebrew/opt/libgit2@1.7/bin:$PATH"
+export PATH="$HOME/flutter/bin:$PATH"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
@@ -58,7 +60,7 @@ alias cat=bat
 # OS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
-  alias alluptd="sudo port selfupdate; sudo port upgrade outdated; mas list; mas upgrade; brew update; brew upgrade; brew cu --all --yes"
+  alias alluptd="sudo port selfupdate; sudo port upgrade outdated; mas list; mas upgrade; brew update; brew upgrade; brew cu --all --yes; rustup update; cargo install-update -a; pip install --upgrade pip; pip-review --local --auto"
   export DISPLAY=:0
   source ~/Projects/fzf-git.sh/fzf-git.sh
 fi
