@@ -60,7 +60,70 @@ alias cat=bat
 # OS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
-  alias alluptd="sudo port selfupdate; sudo port upgrade outdated; mas list; mas upgrade; brew update; brew upgrade; brew cu --all --yes; rustup update; cargo install-update -a; pip install --upgrade pip; pip-review --local --auto"
+  alluptd() {
+    skip_all=false
+
+    # Check for -all argument
+    if [[ "$1" == "-all" ]]; then
+        skip_all=true
+    fi
+
+    # # Combined port selfupdate and port upgrade
+    # if [ "$skip_all" = true ]; then
+    #     sudo port selfupdate
+    #     sudo port upgrade outdated
+    # else
+    #     echo "Run port selfupdate and upgrade outdated? (y/n): "
+    #     read confirm
+    #     if [[ $confirm == [yY] ]]; then
+    #         sudo port selfupdate
+    #         sudo port upgrade outdated
+    #     fi
+    # fi
+
+    # Display mas list, and prompt for mas upgrade
+    mas list
+    if [ "$skip_all" = true ]; then
+        mas upgrade
+    else
+        echo "Run mas upgrade? (y/n): "
+        read confirm
+        if [[ $confirm == [yY] ]]; then
+            mas upgrade
+        fi
+    fi
+
+    brew update
+    brew upgrade
+    brew cu --all --yes
+
+    # Combined rustup update and cargo install-update
+    if [ "$skip_all" = true ]; then
+        rustup update
+        cargo install-update -a
+    else
+        echo "Run rustup update and cargo install-update? (y/n): "
+        read confirm
+        if [[ $confirm == [yY] ]]; then
+            rustup update
+            cargo install-update -a
+        fi
+    fi
+
+    # Combined pip install and pip-review
+    if [ "$skip_all" = true ]; then
+        pip install --upgrade pip
+        pip-review --local --auto
+    else
+        echo "Run pip install --upgrade pip and pip-review? (y/n): "
+        read confirm
+        if [[ $confirm == [yY] ]]; then
+            pip install --upgrade pip
+            pip-review --local --auto
+        fi
+    fi
+}
+
   export DISPLAY=:0
   source ~/Projects/fzf-git.sh/fzf-git.sh
 fi
