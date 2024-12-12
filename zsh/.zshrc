@@ -34,17 +34,16 @@ plugins=(git hacker-quotes)
 
 # Source files
 source ~/Projects/zsh-autocomplete/zsh-autocomplete.plugin.zsh
-source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+source ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
 source $ZSH/oh-my-zsh.sh
 source ~/.p10k.zsh
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 eval "$(zoxide init zsh)"
 export ATUIN_NOBIND="true"
 eval "$(atuin init zsh)"
-# eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
 if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
 fi
 eval "$(fzf --zsh)"
 
