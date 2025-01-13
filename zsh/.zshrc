@@ -1,6 +1,6 @@
 # Environment variables
 export GPG_TTY=$TTY
-export BAT_THEME="Enki-Tokyo-Night"
+export BAT_THEME="tokyonight_storm"
 export HISTSIZE=5000
 export SAVEHIST=10000
 export HISTFILE=~/.cache/zsh/.zsh_history
@@ -14,6 +14,8 @@ export PATH="$PYENV_ROOT/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="/opt/homebrew/opt/libgit2@1.7/bin:$PATH"
 export PATH="$HOME/flutter/bin:$PATH"
+export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
+export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
@@ -46,6 +48,7 @@ if command -v pyenv 1>/dev/null 2>&1; then
   eval "$(pyenv virtualenv-init -)"
 fi
 eval "$(fzf --zsh)"
+eval "$(~/.local/bin/mise activate zsh)"
 
 # Aliases
 alias zshconfig="nvim ~/.zshrc"
@@ -161,3 +164,7 @@ bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
 bindkey '^r' atuin-search
 bindkey '^[[A' atuin-up-search
 bindkey '^[OA' atuin-up-search
+
+
+#Temp
+export DYLD_LIBRARY_PATH="/opt/homebrew/Cellar/libgit2/1.9.0/lib:$DYLD_LIBRARY_PATH"
