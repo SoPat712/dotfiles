@@ -41,8 +41,8 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		lazy = false,
+		-- This table is used in the config function (below) for vim.diagnostic.config()
 		opts = {
-			-- options for vim.diagnostic.config()
 			diagnostics = {
 				underline = true,
 				update_in_insert = false,
@@ -57,39 +57,42 @@ return {
 					},
 				},
 			},
-			-- Enable this to enable the builtin LSP inlay hints on Neovim >= 0.10.0
-			-- Be aware that you also will need to properly configure your LSP server to
-			-- provide the inlay hints.
 			inlay_hints = {
 				enabled = true,
 			},
-			-- add any global capabilities here
-			-- options for vim.lsp.buf.format
-			-- `bufnr` and `filter` is handled by the LazyVim formatter,
-			-- but can be also overridden when specified
 			format = {
 				formatting_options = nil,
 				timeout_ms = nil,
 			},
 		},
-		config = function()
+		config = function(_, opts)
+			-- 1) Use opts.diagnostics to configure diagnostic signs
+			local diag = opts.diagnostics or {}
+			if diag.signs and diag.signs.text then
+				local sign_config = {}
+				for severity, icon_text in pairs(diag.signs.text) do
+					sign_config[severity] = { text = icon_text }
+				end
+				vim.diagnostic.config({
+					signs = { severity = sign_config },
+					virtual_text = diag.virtual_text,
+					underline = diag.underline,
+					severity_sort = diag.severity_sort,
+					update_in_insert = diag.update_in_insert,
+				})
+			end
+
+			-- 2) Set up capabilities and each LSP
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			capabilities.offsetEncoding = { "utf-16" }
 			capabilities.textDocument.foldingRange = {
 				dynamicRegistration = false,
 				lineFoldingOnly = true,
 			}
+
 			local lspconfig = require("lspconfig")
-			local signs = {
-				Error = " ",
-				Warn = " ",
-				Hint = " ",
-				Info = " ",
-			}
-			for type, icon in pairs(signs) do
-				local hl = "DiagnosticSign" .. type
-				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-			end
+
+			-- Example LSPs
 			lspconfig.ts_ls.setup({
 				capabilities = capabilities,
 			})
@@ -102,6 +105,11 @@ return {
 			lspconfig.gopls.setup({
 				capabilities = capabilities,
 			})
+			lspconfig.svelte.setup({
+				capabilities = capabilities,
+			})
+
+			-- Python example
 			local function get_python_path(workspace)
 				-- Use a pattern to find the venv path in the workspace directory
 				local venv_path = lspconfig.util.path.join(workspace, "venv", "bin", "python")
@@ -124,14 +132,16 @@ return {
 					-- Optional: additional setup such as key mappings, etc.
 				end,
 			})
+
+			-- Rust
 			lspconfig.rust_analyzer.setup({
-				-- Server-specific settings. See `:help lspconfig-setup`
 				capabilities = capabilities,
 				settings = {
 					["rust-analyzer"] = {},
 				},
 			})
 
+			-- C/C++ (clangd)
 			lspconfig.clangd.setup({
 				capabilities = capabilities,
 				init_options = {
@@ -172,23 +182,14 @@ return {
 				end,
 			})
 
+			-- UFO setup
 			require("ufo").setup()
 
-			-- Global mappings.
-			-- See `:help vim.diagnostic.*` for documentation on any of the below functions
-
-			-- Use LspAttach autocommand to only map the following keys
-			-- after the language server attaches to the current buffer
+			-- 3) Global LspAttach mappings
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
-					-- Enable completion triggered by <c-x><c-o>
-					-- vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-					-- Buffer local mappings.
-					-- See `:help vim.lsp.*` for documentation on any of the below functions
 					local opts = { buffer = ev.buf }
-
 					vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
 					vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })
 					vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
@@ -215,11 +216,14 @@ return {
 						{ desc = "Go to implementations" }
 					)
 					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-					-- vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
 					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts, { desc = "Rename" })
-					vim.keymap.set({ "n", "v" }, "<leader>ca", require("actions-preview").code_actions, opts, {
-						desc = "Code actions",
-					})
+					vim.keymap.set(
+						{ "n", "v" },
+						"<leader>ca",
+						require("actions-preview").code_actions,
+						opts,
+						{ desc = "Code actions" }
+					)
 					vim.keymap.set("n", "<leader>f", function()
 						vim.lsp.buf.format({ async = true })
 					end, opts, { desc = "Format" })

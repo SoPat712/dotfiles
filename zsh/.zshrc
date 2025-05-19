@@ -11,7 +11,9 @@ export ET_NO_TELEMETRY=FALSE
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"
 # export PATH="$HOME/.cargo/bin:$PATH"
+# export PATH="$PATH:/Users/joshp/tizen-studio/tools/ide/bin"
 export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/.composer/vendor/bin:$PATH"
 export PATH="/opt/homebrew/opt/libgit2@1.7/bin:$PATH"
 export PATH="$HOME/flutter/bin:$PATH"
 export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
@@ -23,6 +25,12 @@ export FZF_CTRL_T_OPTS="--preview 'bat -n --color=always --line-range :500 {}'"
 export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
+export MANPAGER='nvim +Man!'
+#Nano Zone for gcc on MacOS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export MallocNanoZone=0
+fi
+
 
 # History settings
 setopt EXTENDED_HISTORY
@@ -62,61 +70,62 @@ alias cat=bat
 # OS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
+
   alluptd() {
     skip_all=false
+    run_music=false
 
-    # Check for -all argument
-    if [[ "$1" == "-all" ]]; then
-        skip_all=true
-    fi
+    # Check for -all and -music arguments
+    for arg in "$@"; do
+        if [[ "$arg" == "-all" ]]; then
+            skip_all=true
+        elif [[ "$arg" == "-music" ]]; then
+            run_music=true
+        fi
+    done
 
-    # # Combined port selfupdate and port upgrade
-    # if [ "$skip_all" = true ]; then
-    #     sudo port selfupdate
-    #     sudo port upgrade outdated
-    # else
-    #     echo "Run port selfupdate and upgrade outdated? (y/n): "
-    #     read confirm
-    #     if [[ $confirm == [yY] ]]; then
-    #         sudo port selfupdate
-    #         sudo port upgrade outdated
-    #     fi
-    # fi
-
-    # Display mas list, and prompt for mas upgrade
-    mas list
+    # Perform system updates if -all is specified or if running normally
     if [ "$skip_all" = true ]; then
+        # Uncomment the following lines if MacPorts updates are needed
+        # sudo port selfupdate
+        # sudo port upgrade outdated
+
+        mas list
         mas upgrade
+
+        brew update
+        brew upgrade
+        brew cu --all --yes
+
+        rustup update
+        cargo install-update -a
+
+        pip install --upgrade pip
+        pip-review --local --auto
     else
+        # Prompt-based updates
+        mas list
         echo "Run mas upgrade? (y/n): "
         read confirm
         if [[ $confirm == [yY] ]]; then
             mas upgrade
         fi
-    fi
 
-    brew update
-    brew upgrade
-    brew cu --all --yes
+        echo "Run brew update and upgrade? (y/n): "
+        read confirm
+        if [[ $confirm == [yY] ]]; then
+            brew update
+            brew upgrade
+            brew cu --all --yes
+        fi
 
-    # Combined rustup update and cargo install-update
-    if [ "$skip_all" = true ]; then
-        rustup update
-        cargo install-update -a
-    else
         echo "Run rustup update and cargo install-update? (y/n): "
         read confirm
         if [[ $confirm == [yY] ]]; then
             rustup update
             cargo install-update -a
         fi
-    fi
 
-    # Combined pip install and pip-review
-    if [ "$skip_all" = true ]; then
-        pip install --upgrade pip
-        pip-review --local --auto
-    else
         echo "Run pip install --upgrade pip and pip-review? (y/n): "
         read confirm
         if [[ $confirm == [yY] ]]; then
@@ -124,10 +133,23 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             pip-review --local --auto
         fi
     fi
-}
 
+    # Perform music-related tasks if -music is specified
+    if [ "$run_music" = true ]; then
+        echo "Running music sync..."
+        cd ~/Projects/lrcput
+        python lrcput.py -d "/Volumes/Crucial X8/Media/Music/" -r -R
+
+        rsync -avP --delete --chown=navidrome:nogroup -e 'ssh -p 5222' "/Volumes/Crucial X8/Media/Music/" root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
+
+        rsync -avP --delete "/Volumes/Crucial X8/Media/Music/" "/Volumes/Samsung USB/Music/"
+    fi
+  }
+
+  # Additional configurations
   export DISPLAY=:0
   source ~/Projects/fzf-git.sh/fzf-git.sh
+  alias brewfixes="brew cleanup && brew cleanup --prune=all && brew autoremove && brew doctor && brew update && brew upgrade && brew missing"
 fi
 
 # Editor settings
@@ -168,3 +190,7 @@ bindkey '^[OA' atuin-up-search
 
 #Temp
 export DYLD_LIBRARY_PATH="/opt/homebrew/Cellar/libgit2/1.9.0/lib:$DYLD_LIBRARY_PATH"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

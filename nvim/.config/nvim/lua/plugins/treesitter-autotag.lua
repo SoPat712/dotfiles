@@ -1,6 +1,6 @@
 return {
 	"windwp/nvim-ts-autotag",
-	event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+	event = { "BufReadPre", "BufNewFile" },
 	config = function()
 		local config = require("nvim-ts-autotag")
 		config.setup({

@@ -11,6 +11,7 @@ return {
 				ensure_installed = {
 					"c",
 					"cpp",
+					"svelte",
 					"css",
 					"html",
 					"javascript",
