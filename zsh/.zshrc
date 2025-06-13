@@ -16,8 +16,9 @@ export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.composer/vendor/bin:$PATH"
 export PATH="/opt/homebrew/opt/libgit2@1.7/bin:$PATH"
 export PATH="$HOME/flutter/bin:$PATH"
-export ANDROID_HOME=/opt/homebrew/share/android-commandlinetools
-export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+# export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_ALT_C_COMMAND="fd --type=d --hidden --strip-cwd-prefix --exclude .git"
@@ -135,14 +136,37 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     fi
 
     # Perform music-related tasks if -music is specified
+    # if [ "$run_music" = true ]; then
+    #     echo "Running music sync..."
+    #     cd ~/Projects/lrcput
+    #     python lrcput.py -d "/Volumes/Crucial X8/Media/Music/" -r -R
+    #
+    #     # rsync -avP --delete --chown=navidrome:nogroup -e 'ssh -p 5222' "/Volumes/Crucial X8/Media/Music/" root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
+    #     #
+    #     # rsync -avP --delete "/Volumes/Crucial X8/Media/Music/" "/Volumes/Samsung USB/Music/"
+    #     rsync -avP --delete --chown=navidrome:navidrome -e 'ssh -p 5222' "/Volumes/Crucial X8/Media/Music/" root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
+    #
+    # rsync -rltDvP --delete --no-perms --no-owner --no-group --chmod=ugo=rwX "/Volumes/Crucial X8/Media/Music/" "/Volumes/Samsung USB/Music/"
+    #
+    # fi
     if [ "$run_music" = true ]; then
-        echo "Running music sync..."
-        cd ~/Projects/lrcput
-        python lrcput.py -d "/Volumes/Crucial X8/Media/Music/" -r -R
+    echo "Running music sync..."
+    cd ~/Projects/lrcput
+    python lrcput.py -d "/Volumes/Crucial X8/Media/Music/" -r -R
 
-        rsync -avP --delete --chown=navidrome:nogroup -e 'ssh -p 5222' "/Volumes/Crucial X8/Media/Music/" root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
+    dot_clean "/Volumes/Crucial X8/Media/Music/"
 
-        rsync -avP --delete "/Volumes/Crucial X8/Media/Music/" "/Volumes/Samsung USB/Music/"
+    rsync -aHv --delete --chown=navidrome:navidrome \
+      --chmod=F644,D755 \
+      -e 'ssh -p 5222' \
+      "/Volumes/Crucial X8/Media/Music/" \
+      root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
+
+
+    rsync -aHv --delete \
+      "/Volumes/Crucial X8/Media/Music/" \
+      "/Volumes/Samsung USB/Music/"
+
     fi
   }
 
