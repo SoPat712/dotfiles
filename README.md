@@ -17,7 +17,7 @@ It's not entirely optimized, but I tried to reduce startup time as much as possi
 
 ### UI Stuff
 
-I run tokyonight-moon theme, with alpha-nvim as my dashboard.
+I run tokyonight-storm theme, with alpha-nvim as my dashboard.
 
 I also have mini-indentscope and indent-blankline in order to get some cool indentation highlighting. Entirely unnecessary, but entirely cool.
 
@@ -25,22 +25,26 @@ I also have mini-indentscope and indent-blankline in order to get some cool inde
 
 I switched from null-ls to conform.nvim + nvim-lint after reading a Reddit Post. I find it pretty fast. Still perfecting the configuration though.
 
-## GIT
+## git
 
 Just a .gitconfig built up over regular usage
 
-## TMUX
+## tmux
 
 My new .tmux.conf
 
-## ZSH
+## Zsh
 
-Just a basic old ZSH
+Just a basic old ZSH with omz now
 
-## QBIT
+## qBittorrent
 
 The WebUI that I use, and the theme that I prefer
 
-## VIM
+## Neovim
 
 Hopefully, a portable Vim setup for working over SSH and stuff
+
+## Yazi
+
+My new file manager, maybe?
