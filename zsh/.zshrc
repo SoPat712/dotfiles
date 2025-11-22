@@ -27,6 +27,16 @@ export FZF_ALT_C_OPTS="--preview 'eza --tree --color=always {} | head -200'"
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 export MANPAGER='nvim +Man!'
+export OLLAMA_KEEP_ALIVE=20m
+export OLLAMA_HOST=0.0.0.0:11434
+export LM_STUDIO_API_KEY="sk-dummy-api-key"
+export OPENAI_API_KEY="sk-dummy-api-key"
+export OPENAI_BASE_URL="http://localhost:1234/v1"
+export OPENAI_MODEL="qwen/qwen3-coder-30b"
+export NEXTDNS_URL="https://link-ip.nextdns.io/6f6c4e/f5476a644c7d5b0d"
+
+# Stuff for development
+export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin:$(brew --prefix)/opt/gnu-getopt/bin:$(brew --prefix)/opt/make/libexec/gnubin:$(brew --prefix)/opt/util-linux/bin:${PATH}"
 #Nano Zone for gcc on MacOS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     export MallocNanoZone=0
@@ -58,6 +68,7 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 eval "$(fzf --zsh)"
 eval "$(~/.local/bin/mise activate zsh)"
+# eval "$(rbenv init - zsh)"
 
 # Aliases
 alias zshconfig="nvim ~/.zshrc"
@@ -71,6 +82,27 @@ alias cat=bat
 # OS-specific settings
 if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
+
+  music() {
+  echo "Running music sync..."
+
+  cd ~/Projects/lrcput || return
+  python lrcput.py -d "/Volumes/Crucial X8/Media/Music/" -r -R
+
+  dot_clean "/Volumes/Crucial X8/Media/Music/"
+
+  rsync -aHv --delete --chown=navidrome:navidrome \
+    --chmod=F644,D755 \
+    -e 'ssh -p 6222' \
+    "/Volumes/Crucial X8/Media/Music/" \
+    root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
+
+  rsync -aHv --delete \
+    "/Volumes/Crucial X8/Media/Music/" \
+    "/Volumes/Samsung USB/Music/"
+
+  echo "✅ Music sync complete."
+  }
 
   alluptd() {
     skip_all=false
@@ -158,7 +190,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
     rsync -aHv --delete --chown=navidrome:navidrome \
       --chmod=F644,D755 \
-      -e 'ssh -p 5222' \
+      -e 'ssh -p 6222' \
       "/Volumes/Crucial X8/Media/Music/" \
       root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
 
@@ -218,3 +250,18 @@ export DYLD_LIBRARY_PATH="/opt/homebrew/Cellar/libgit2/1.9.0/lib:$DYLD_LIBRARY_P
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+
+export PATH="$PATH:$HOME/.local/bin"
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/Users/joshp/.lmstudio/bin"
+# End of LM Studio CLI section
+
+export GEMINI_API_KEY=AIzaSyA515wVt60qNWDqdt0QCKvx9vPoDb6b0fg
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/joshp/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions

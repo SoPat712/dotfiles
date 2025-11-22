@@ -21,12 +21,16 @@ return {
 
 			mason_tool_installer.setup({
 				ensure_installed = {
-					"prettier", -- prettier formatter
-					"stylua", -- lua formatter
-					"isort", -- python formatter
-					"black", -- python formatter
-					"pylint", -- python linter
-					"eslint_d", -- js linter
+					-- Formatters
+					"prettier",
+					"stylua",
+					"isort",
+					"black",
+					-- Linters
+					"eslint_d",
+					"pylint",
+					-- LSP servers
+					"vtsls", -- better TypeScript/JavaScript LSP (or use "typescript-language-server" for ts_ls)
 				},
 			})
 		end,
@@ -41,7 +45,6 @@ return {
 	{
 		"neovim/nvim-lspconfig",
 		lazy = false,
-		-- This table is used in the config function (below) for vim.diagnostic.config()
 		opts = {
 			diagnostics = {
 				underline = true,
@@ -66,7 +69,7 @@ return {
 			},
 		},
 		config = function(_, opts)
-			-- 1) Use opts.diagnostics to configure diagnostic signs
+			-- 1) Configure diagnostics
 			local diag = opts.diagnostics or {}
 			if diag.signs and diag.signs.text then
 				local sign_config = {}
@@ -82,7 +85,7 @@ return {
 				})
 			end
 
-			-- 2) Set up capabilities and each LSP
+			-- 2) Set up capabilities
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 			capabilities.offsetEncoding = { "utf-16" }
 			capabilities.textDocument.foldingRange = {
@@ -90,51 +93,78 @@ return {
 				lineFoldingOnly = true,
 			}
 
-			local lspconfig = require("lspconfig")
+			-- 3) Setup LSP servers using vim.lsp.config
 
-			-- Example LSPs
-			lspconfig.ts_ls.setup({
+			-- TypeScript/JavaScript (using vtsls for better refactoring support)
+			vim.lsp.config("vtsls", {
 				capabilities = capabilities,
+				filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 			})
-			lspconfig.html.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.lua_ls.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.gopls.setup({
-				capabilities = capabilities,
-			})
-			lspconfig.svelte.setup({
+
+			-- HTML
+			vim.lsp.config("html", {
 				capabilities = capabilities,
 			})
 
-			-- Python example
+			-- Lua
+			vim.lsp.config("lua_ls", {
+				capabilities = capabilities,
+			})
+
+			-- Go
+			vim.lsp.config("gopls", {
+				capabilities = capabilities,
+			})
+
+			-- Svelte
+			vim.lsp.config("svelte", {
+				capabilities = capabilities,
+			})
+
+			-- Python (Pyright)
 			local function get_python_path(workspace)
-				-- Use a pattern to find the venv path in the workspace directory
-				local venv_path = lspconfig.util.path.join(workspace, "venv", "bin", "python")
-				return venv_path
+				-- 1) Workspace-local venv: <workspace>/venv/bin/python
+				if workspace and workspace ~= "" then
+					local venv_path = vim.fs.joinpath(workspace, "venv", "bin", "python")
+					if vim.fn.executable(venv_path) == 1 then
+						return venv_path
+					end
+				end
+
+				-- 2) Active virtualenv, if any
+				if vim.env.VIRTUAL_ENV and vim.env.VIRTUAL_ENV ~= "" then
+					local venv_python = vim.fs.joinpath(vim.env.VIRTUAL_ENV, "bin", "python")
+					if vim.fn.executable(venv_python) == 1 then
+						return venv_python
+					end
+				end
+
+				-- 3) Fallback to system python
+				return "python3"
 			end
-			lspconfig.pyright.setup({
+
+			vim.lsp.config("pyright", {
 				capabilities = capabilities,
-				before_init = function(_, config)
-					config.settings = {
-						python = {
-							analysis = {
-								autoSearchPaths = true,
-								useLibraryCodeForTypes = true,
-							},
-							pythonPath = get_python_path(config.root_dir),
-						},
+				before_init = function(params, config)
+					-- Try a few ways to get a sane workspace path
+					local workspace = config.root_dir
+						or (params.rootUri and vim.uri_to_fname(params.rootUri))
+						or vim.loop.cwd()
+
+					config.settings = config.settings or {}
+					config.settings.python = config.settings.python or {}
+
+					config.settings.python.analysis = {
+						autoSearchPaths = true,
+						useLibraryCodeForTypes = true,
 					}
-				end,
-				on_attach = function(client, bufnr)
-					-- Optional: additional setup such as key mappings, etc.
+
+					config.settings.python.pythonPath = get_python_path(workspace)
 				end,
 			})
 
 			-- Rust
-			lspconfig.rust_analyzer.setup({
+			vim.lsp.config("rust_analyzer", {
 				capabilities = capabilities,
 				settings = {
 					["rust-analyzer"] = {},
@@ -142,18 +172,8 @@ return {
 			})
 
 			-- C/C++ (clangd)
-			lspconfig.clangd.setup({
+			vim.lsp.config("clangd", {
 				capabilities = capabilities,
-				init_options = {
-					clangdFileStatus = true,
-					usePlaceholders = true,
-					completeUnimported = true,
-					semanticHighlighting = true,
-				},
-				on_attach = function(client, bufnr)
-					require("clangd_extensions.inlay_hints").setup_autocmd()
-					require("clangd_extensions.inlay_hints").set_inlay_hints()
-				end,
 				cmd = {
 					"clangd",
 					"--background-index",
@@ -166,67 +186,85 @@ return {
 					"-j=12",
 					"--header-insertion-decorators",
 				},
-				root_dir = function(fname)
-					return require("lspconfig.util").root_pattern(
-						"Makefile",
-						"configure.ac",
-						"configure.in",
-						"config.h.in",
-						"meson.build",
-						"meson_options.txt",
-						"build.ninja"
-					)(fname) or require("lspconfig.util").root_pattern(
-						"compile_commands.json",
-						"compile_flags.txt"
-					)(fname) or require("lspconfig.util").find_git_ancestor(fname)
+				root_markers = {
+					"Makefile",
+					"configure.ac",
+					"configure.in",
+					"config.h.in",
+					"meson.build",
+					"meson_options.txt",
+					"build.ninja",
+					"compile_commands.json",
+					"compile_flags.txt",
+					".git",
+				},
+				on_attach = function(client, bufnr)
+					-- Optional: clangd extensions setup
+					local ok, clangd_ext = pcall(require, "clangd_extensions.inlay_hints")
+					if ok then
+						clangd_ext.setup_autocmd()
+						clangd_ext.set_inlay_hints()
+					end
 				end,
 			})
 
 			-- UFO setup
 			require("ufo").setup()
 
-			-- 3) Global LspAttach mappings
+			-- 4) Global LspAttach mappings
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", {}),
 				callback = function(ev)
 					local opts = { buffer = ev.buf }
-					vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open diagnostic float" })
-					vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })
-					vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
-					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts, { desc = "Go to declaration" })
+
+					vim.keymap.set(
+						"n",
+						"<leader>e",
+						vim.diagnostic.open_float,
+						{ buffer = ev.buf, desc = "Open diagnostic float" }
+					)
+					vim.keymap.set(
+						"n",
+						"[d",
+						vim.diagnostic.goto_prev,
+						{ buffer = ev.buf, desc = "Go to previous diagnostic" }
+					)
+					vim.keymap.set(
+						"n",
+						"]d",
+						vim.diagnostic.goto_next,
+						{ buffer = ev.buf, desc = "Go to next diagnostic" }
+					)
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = ev.buf, desc = "Go to declaration" })
 					vim.keymap.set(
 						"n",
 						"gd",
 						require("telescope.builtin").lsp_definitions,
-						opts,
-						{ desc = "Go to definition" }
+						{ buffer = ev.buf, desc = "Go to definition" }
 					)
 					vim.keymap.set(
 						"n",
 						"gr",
 						require("telescope.builtin").lsp_references,
-						opts,
-						{ desc = "Go to references" }
+						{ buffer = ev.buf, desc = "Go to references" }
 					)
 					vim.keymap.set(
 						"n",
 						"gi",
 						require("telescope.builtin").lsp_implementations,
-						opts,
-						{ desc = "Go to implementations" }
+						{ buffer = ev.buf, desc = "Go to implementations" }
 					)
-					vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts, { desc = "Rename" })
+					vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = ev.buf, desc = "Hover" })
+					vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = ev.buf, desc = "Rename" })
 					vim.keymap.set(
 						{ "n", "v" },
 						"<leader>ca",
 						require("actions-preview").code_actions,
-						opts,
-						{ desc = "Code actions" }
+						{ buffer = ev.buf, desc = "Code actions" }
 					)
 					vim.keymap.set("n", "<leader>f", function()
 						vim.lsp.buf.format({ async = true })
-					end, opts, { desc = "Format" })
+					end, { buffer = ev.buf, desc = "Format" })
 				end,
 			})
 		end,

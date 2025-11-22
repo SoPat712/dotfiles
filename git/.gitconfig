@@ -1,7 +1,7 @@
 [user]
 	email = 30350506+SoPat712@users.noreply.github.com
 	name = Josh Patra
-	signingkey = 34E3C1465C60BF2DDDD994A819FDD4F401823AE1
+	signingkey = 19FDD4F401823AE1
 [diff]
 	tool = nvimdiff
 [core]
@@ -28,3 +28,7 @@
 	postBuffer = 524288000
 [pull]
 	rebase = false
+[gpg]
+	program = /opt/homebrew/bin/gpg
+[credential]
+	helper = store
