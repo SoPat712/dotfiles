@@ -236,6 +236,14 @@ _fzf_comprun() {
   esac
 }
 
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+	yazi "$@" --cwd-file="$tmp"
+	IFS= read -r -d '' cwd < "$tmp"
+	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+	rm -f -- "$tmp"
+}
+
 # Keybinds
 bindkey '\t' menu-select "$terminfo[kcbt]" menu-select
 bindkey -M menuselect '\t' menu-complete "$terminfo[kcbt]" reverse-menu-complete
@@ -259,7 +267,6 @@ export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:/Users/joshp/.lmstudio/bin"
 # End of LM Studio CLI section
 
-export GEMINI_API_KEY=AIzaSyA515wVt60qNWDqdt0QCKvx9vPoDb6b0fg
 # The following lines have been added by Docker Desktop to enable Docker CLI completions.
 fpath=(/Users/joshp/.docker/completions $fpath)
 autoload -Uz compinit
