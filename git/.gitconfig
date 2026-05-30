@@ -1,7 +1,7 @@
 [user]
-	email = 30350506+SoPat712@users.noreply.github.com
+	email = joshpatra12@gmail.com
 	name = Josh Patra
-	signingkey = 19FDD4F401823AE1
+	signingkey = 5AC7864D82ADF015FF1E06466266C768BB28B2AA
 [diff]
 	tool = nvimdiff
 [core]
@@ -30,5 +30,11 @@
 	rebase = false
 [gpg]
 	program = /opt/homebrew/bin/gpg
+	format = openpgp
 [credential]
 	helper = store
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f

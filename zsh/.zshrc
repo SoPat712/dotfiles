@@ -29,11 +29,13 @@ export LANG=en_US.UTF-8
 export MANPAGER='nvim +Man!'
 export OLLAMA_KEEP_ALIVE=20m
 export OLLAMA_HOST=0.0.0.0:11434
-export LM_STUDIO_API_KEY="sk-dummy-api-key"
-export OPENAI_API_KEY="sk-dummy-api-key"
-export OPENAI_BASE_URL="http://localhost:1234/v1"
-export OPENAI_MODEL="qwen/qwen3-coder-30b"
+export LM_STUDIO_API_KEY="sk-lm-KQKvhFvL:bVNdgvSeNzufTIeRdDr3"
+# export OPENAI_API_KEY="sk-lm-KQKvhFvL:bVNdgvSeNzufTIeRdDr3"
+# export OPENAI_BASE_URL="http://localhost:1234/v1"
+# export OPENAI_MODEL="qwen/qwen3-coder-30b"
 export NEXTDNS_URL="https://link-ip.nextdns.io/6f6c4e/f5476a644c7d5b0d"
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+export MAS_NO_AUTO_INDEX=1
 
 # Stuff for development
 export PATH="$(brew --prefix)/opt/findutils/libexec/gnubin:$(brew --prefix)/opt/gnu-getopt/bin:$(brew --prefix)/opt/make/libexec/gnubin:$(brew --prefix)/opt/util-linux/bin:${PATH}"
@@ -84,24 +86,37 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export PATH=$PATH:/Users/joshp/.spicetify
 
   music() {
-  echo "Running music sync..."
+    echo "Running music sync..."
 
-  cd ~/Projects/lrcput || return
-  python lrcput.py -d "/Volumes/Crucial X8/Media/Music/" -r -R
+    cd ~/Projects/lrcput || return 1
+    python lrcput.py -d "/Volumes/Crucial X8/Media/Music/" -r -R
 
-  dot_clean "/Volumes/Crucial X8/Media/Music/"
+    # ReplayGain (album + track, MAX mode, skip if already tagged)
+    rsgain easy -m MAX -S /Volumes/Crucial\ X8/Media/Music -Oas
 
-  rsync -aHv --delete --chown=navidrome:navidrome \
-    --chmod=F644,D755 \
-    -e 'ssh -p 6222' \
-    "/Volumes/Crucial X8/Media/Music/" \
-    root@ddns.joshpatra.me:/media/FiveTB/Navidrome/joshp
+    # Clean macOS metadata
+    dot_clean "/Volumes/Crucial X8/Media/Music/"
 
-  rsync -aHv --delete \
-    "/Volumes/Crucial X8/Media/Music/" \
-    "/Volumes/Samsung USB/Music/"
+    # Sync to Navidrome
+    rsync -aHv --delete \
+      --chown=1005:1005 \
+      --chmod=F644,D755 \
+      --exclude='.DS_Store' \
+      --exclude='._*' \
+      --exclude='.Spotlight-V100' \
+      --exclude='.Trashes' \
+      -e ssh \
+      "/Volumes/Crucial X8/Media/Music/" \
+      root@192.168.1.57:/media/FiveTB/Navidrome/joshp/
 
-  echo "✅ Music sync complete."
+    # Local backup copy
+    rsync -aHv --delete \
+      --exclude='.DS_Store' \
+      --exclude='._*' \
+      "/Volumes/Crucial X8/Media/Music/" \
+      "/Volumes/Samsung USB/Music/"
+
+    echo "✅ Music sync complete."
   }
 
   alluptd() {
@@ -272,3 +287,6 @@ fpath=(/Users/joshp/.docker/completions $fpath)
 autoload -Uz compinit
 compinit
 # End of Docker CLI completions
+
+# Added by Antigravity
+export PATH="/Users/joshp/.antigravity/antigravity/bin:$PATH"

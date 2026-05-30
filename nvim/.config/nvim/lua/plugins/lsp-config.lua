@@ -145,11 +145,8 @@ return {
 
 			vim.lsp.config("pyright", {
 				capabilities = capabilities,
-				before_init = function(params, config)
-					-- Try a few ways to get a sane workspace path
-					local workspace = config.root_dir
-						or (params.rootUri and vim.uri_to_fname(params.rootUri))
-						or vim.loop.cwd()
+				before_init = function(_, config)
+					local workspace = config.root_dir or vim.uv.cwd()
 
 					config.settings = config.settings or {}
 					config.settings.python = config.settings.python or {}
